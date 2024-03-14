@@ -13,6 +13,59 @@
         (function () {
             emailjs.init("tC6ao1PIBXwcg0jMu");
         })();
+
+        // Function to save email address to local storage
+        function saveEmail() {
+            var emailInput = document.getElementById('email').value;
+            localStorage.setItem('savedEmail', emailInput);
+            alert("Email saved successfully!");
+        }
+
+        // Function to save selected time to local storage
+        function setTime() {
+            var selectedTime = document.getElementById('userTime').value;
+            localStorage.setItem('selectedTime', selectedTime);
+            alert("Time set successfully!");
+        }
+
+        // Function to check if the scheduled time matches the current time and send email if matched
+        function checkDateTimeAndSendEmail() {
+            var current = new Date();
+            var currentHours = current.getHours();
+            var currentMinutes = current.getMinutes();
+
+            // Retrieve saved time and email from local storage
+            var savedTime = localStorage.getItem('selectedTime');
+            var savedEmail = localStorage.getItem('savedEmail');
+
+            // Check if saved time and email exist
+            if (savedTime && savedEmail) {
+                var selectedHours = parseInt(savedTime.split(':')[0], 10);
+                var selectedMinutes = parseInt(savedTime.split(':')[1], 10);
+
+                // Check if the current time matches the scheduled time
+                if (currentHours === selectedHours && currentMinutes === selectedMinutes) {
+                    sendEmail(savedEmail); // Send the email
+                }
+            }
+        }
+
+        // Set interval to check the time and send email
+        setInterval(checkDateTimeAndSendEmail, 60000); // Check every minute
+
+        // Function to populate email and time fields with stored values on page load
+        window.onload = function() {
+            var savedEmail = localStorage.getItem('savedEmail');
+            var savedTime = localStorage.getItem('selectedTime');
+
+            if (savedEmail) {
+                document.getElementById('email').value = savedEmail;
+            }
+
+            if (savedTime) {
+                document.getElementById('userTime').value = savedTime;
+            }
+        };
     </script>
 </head>
 
@@ -48,8 +101,6 @@
                     <input type="email" id="email" name="email" required placeholder="Type Here">
                     <button type="button" class="newbut" onclick="saveEmail()">Save Email</button>
                 </div>
-                
-            
             </div>
         </div>
     </div>
@@ -57,8 +108,6 @@
     <script>
         // Define a global variable for the to-do list array
         var todoItems = [];
-        var selectedHours;
-        var selectedMinutes;
 
         function addTask() {
             var inputbox = document.getElementById("input-box");
@@ -137,66 +186,6 @@
                     console.error("Error sending to-do list:", error);
                 });
         }
-
-        function saveEmail(){
-            var emailInput = document.getElementById('email').value;
-            alert("Email saved successfully!");
-        }
-
-        function showCurrentTime() {
-            var now = new Date();
-            var hours = now.getHours();
-            var minutes = now.getMinutes();
-            var seconds = now.getSeconds();
-            var timeString = hours.toString().padStart(2, '0') + ':' +
-                minutes.toString().padStart(2, '0') + ':' +
-                seconds.toString().padStart(2, '0');
-            document.getElementById('date-time').innerHTML = timeString;
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            showCurrentTime();
-            setInterval(showCurrentTime, 1000);
-        });
-
-        function setTime() {
-            var selectedTime = document.getElementById('userTime').value;
-            selectedHours = parseInt(selectedTime.split(':')[0], 10);
-            selectedMinutes = parseInt(selectedTime.split(':')[1], 10);
-            alert("Time set successfully!");
-        }
-
-        function setDate() {
-    var selectedDate = document.getElementById('userdate').value;
-    var parts = selectedDate.split('/');
-    selectedMonth = parseInt(parts[0], 10); // Month (1-12)
-    selectedDay = parseInt(parts[1], 10);   // Day (1-31)
-    alert("Date set successfully!");
-}
-
-function checkDateTimeAndSendEmail() {
-    var current = new Date();
-    var currentHours = current.getHours();
-    var currentMinutes = current.getMinutes();
-    var currentMonth = current.getMonth() + 1; // Adding 1 because getMonth() returns zero-based month index
-    var currentDay = current.getDate(); // Getting the day of the month
-
-    // Check if the current date and time match the scheduled date and time
-    if (
-        currentHours === selectedHours && 
-        currentMinutes === selectedMinutes
-      //  currentMonth === selectedMonth && 
-      //  currentDay === selectedDay
-     ) {
-        var email = document.getElementById('email').value;
-        sendEmail(email);
-    }
-}
-
-  setInterval(checkDateTimeAndSendEmail, 60000);
-
-
-
 
         function saveData() {
             localStorage.setItem("data", JSON.stringify(todoItems));
