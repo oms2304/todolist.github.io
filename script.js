@@ -1,43 +1,96 @@
-const inputBox = document.getElementById("inbox");
-const listContainer = document.getElementById("list-container"); //create a variable called listContainer in order to be able to reference list-container
+const inputBox = document.getElementById("input-box");
+const listContainer = document.getElementById("list-container");
 
-
-function addtask(){
-    if(inputBox.value === ''){
-        alert("FIND SOMETHING TO DO!!!")
+// Function to add a new task
+function addTask() {
+    if (inputBox.value === '') {
+        alert("Please enter a task!");
+        return;
     }
-    else{
-        let li = document.createElement("li");  // creates a html element called li
-        li.innerHTML = inputBox.value; //adds whatever was inside the input box into the new html element
-        listContainer.appendChild(li); //displays the new html element
+
+    let taskDescription = inputBox.value;
+    let li = document.createElement("li");
+    li.textContent = taskDescription;
+    listContainer.appendChild(li);
+
+    // Add delete button
+    let span = document.createElement("span");
+    span.innerHTML = "\u00d7";
+    span.className = "delete-button";
+    li.appendChild(span);
+
+    // Save task to localStorage
+    saveTask(taskDescription);
+
+    inputBox.value = ''; // Clear input box
+}
+
+// Function to delete a task
+function deleteTask(taskElement) {
+    taskElement.remove();
+
+    // Get the description of the task to delete from its text content
+    let taskDescription = taskElement.textContent;
+
+    // Remove task from localStorage
+    removeTask(taskDescription);
+}
+
+// Event listener for task deletion
+listContainer.addEventListener("click", function (e) {
+    if (e.target.classList.contains("delete-button")) {
+        deleteTask(e.target.parentElement);
+    }
+});
+
+// Function to save task to localStorage
+function saveTask(taskDescription) {
+    let tasks = getTasksFromLocalStorage();
+    tasks.push(taskDescription);
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// Function to remove task from localStorage
+// Function to remove task from localStorage
+// Function to remove task from localStorage
+function removeTask(taskDescription) {
+    let tasks = getTasksFromLocalStorage();
+    let index = tasks.indexOf(taskDescription);
+    if (index !== -1) {
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        console.log("Task removed:", taskDescription); // Add this line for logging
+    }
+}
+
+
+// Function to get tasks from localStorage
+function getTasksFromLocalStorage() {
+    let tasks = localStorage.getItem("tasks");
+    return tasks ? JSON.parse(tasks) : [];
+}
+
+// Function to load tasks from localStorage
+// Function to load tasks from localStorage
+// Function to load tasks from localStorage
+function loadTasksFromLocalStorage() {
+    listContainer.innerHTML = ''; // Clear the existing list before loading tasks
+    let tasks = getTasksFromLocalStorage();
+    console.log("Tasks loaded from local storage:", tasks); // Add this line for logging
+    tasks.forEach(function (taskDescription) {
+        let li = document.createElement("li");
+        li.textContent = taskDescription;
+        listContainer.appendChild(li);
+
+        // Add delete button
         let span = document.createElement("span");
-        span.innerHTML ="\u00d7"; //adds a cross icon at the end of the list item
+        span.innerHTML = "\u00d7";
+        span.className = "delete-button";
         li.appendChild(span);
-    }
-    inputBox.value = ""; //after adding the text the input field gets cleared
-    savedata(); //after adding any li saveData function will be called
+    });
 }
 
-listContainer.addEventListener("click", function(e){ //when clicking on anything in the list container
-    if(e.target.tagName === "LI"){ //checks where we clicked. Either on a list item or on the x
-        e.target.classList.toggle("checked"); //if LI is clicked the "checked" class name will be activated (line through li)
-        savedata(); //after adding any li saveData function will be called
 
-    }
-    else if(e.target.tagName === "SPAN"){ //Else if the (x) is clicked, li will be removed
-        e.target.parentElement.remove(); //removed li
-        savedata(); //after adding any li saveData function will be called
-    }
-})
 
-function savedata(){
-    console.log("Before saving:", listContainer.innerHTML);
-    localStorage.setItem("data", listContainer.innerHTML);
-    console.log("After saving:", localStorage.getItem("data"));
-}
-
-function showTask(){
-    listContainer.innerHTML = localStorage.getItem("data");
-}
-
-showTask();
+// Load tasks from localStorage when the page loads
+loadTasksFromLocalStorage();
