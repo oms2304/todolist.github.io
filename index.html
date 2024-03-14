@@ -184,9 +184,9 @@ function checkDateTimeAndSendEmail() {
     // Check if the current date and time match the scheduled date and time
     if (
         currentHours === selectedHours && 
-        currentMinutes === selectedMinutes &&
-        currentMonth === selectedMonth && 
-        currentDay === selectedDay
+        currentMinutes === selectedMinutes
+      //  currentMonth === selectedMonth && 
+      //  currentDay === selectedDay
      ) {
         var email = document.getElementById('email').value;
         sendEmail(email);
